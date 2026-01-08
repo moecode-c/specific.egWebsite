@@ -1,0 +1,46 @@
+import mongoose, { Schema, Types } from "mongoose";
+
+export type OrderStatus = "pending" | "accepted" | "declined";
+
+export type OrderItem = {
+  product: Types.ObjectId;
+  quantity: number;
+};
+
+export type OrderDoc = {
+  _id: Types.ObjectId;
+  user: Types.ObjectId;
+  products: OrderItem[];
+  totalPrice: number;
+  status: OrderStatus;
+  createdAt: Date;
+};
+
+const orderSchema = new Schema<OrderDoc>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    products: {
+      type: [
+        {
+          product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+          quantity: { type: Number, required: true, min: 1 },
+        },
+      ],
+      default: [],
+      required: true,
+    },
+    totalPrice: { type: Number, required: true, min: 0 },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "declined"],
+      default: "pending",
+    },
+  },
+  { timestamps: { createdAt: true, updatedAt: true } }
+);
+
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+
+export const Order =
+  mongoose.models.Order || mongoose.model<OrderDoc>("Order", orderSchema);
