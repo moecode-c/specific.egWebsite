@@ -4,6 +4,8 @@ import "./globals.css";
 import { Providers } from "../components/providers/Providers";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
+import { LoadingScreen } from "../components/LoadingScreen";
+
 
 export const metadata: Metadata = {
   title: "SPECIFIC",
@@ -21,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen text-white antialiased">
+        <LoadingScreen />
         <Script
           type="module"
           src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
