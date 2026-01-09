@@ -3,7 +3,7 @@
 @layer base {
 	html,
 	body {
-		height: 100%;
+		min-height: 100vh;
 		background-color: #05030a;
 	}
 
@@ -20,18 +20,23 @@
 				transparent 55%
 			),
 			radial-gradient(
+				1200px circle at 50% 50%,
+				rgba(176, 38, 255, 0.12),
+				transparent 60%
+			),
+			radial-gradient(
 				1000px circle at 22% 88%,
-				rgba(176, 38, 255, 0.16),
+				rgba(176, 38, 255, 0.22),
 				transparent 60%
 			),
 			radial-gradient(
 				900px circle at 82% 92%,
-				rgba(255, 45, 154, 0.14),
+				rgba(255, 45, 154, 0.20),
 				transparent 62%
 			),
 			radial-gradient(
 				820px circle at 62% 78%,
-				rgba(42, 14, 79, 0.7),
+				rgba(42, 14, 79, 0.8),
 				transparent 60%
 			),
 			linear-gradient(180deg, rgba(8, 3, 18, 0.96) 0%, rgba(5, 3, 10, 1) 52%, rgba(4, 2, 8, 1) 100%);

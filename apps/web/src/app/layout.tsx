@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-linear-to-b from-brand via-ink-900 to-brand text-white antialiased">
+      <body className="min-h-screen text-white antialiased">
         <Script
           type="module"
           src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"

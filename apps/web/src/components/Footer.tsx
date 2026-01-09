@@ -18,10 +18,6 @@ export function Footer() {
               <div className="text-sm text-white/80">Premium mobile cases. Luxury tech protection.</div>
             </div>
           </div>
-          <div className="inline-flex items-center gap-2 text-xs text-white/70">
-            <IconSparkle size={18} className="text-neon-300 drop-shadow" />
-            <span className="font-semibold text-neon-300">Dark purple premium theme</span>
-          </div>
         </div>
         <div className="mt-8 text-center text-xs text-white/40">
           &copy; {new Date().getFullYear()} SPECIFIC. All rights reserved.
