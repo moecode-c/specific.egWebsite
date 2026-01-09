@@ -8,6 +8,7 @@ import { useAuth } from "../providers/AuthProvider";
 import { Button } from "../ui/Button";
 import { Select } from "../ui/Select";
 import { IconRefresh } from "../Icons";
+import { formatEGP } from "../../lib/money";
 
 export function AdminOrdersClient() {
   const { token } = useAuth();
@@ -49,7 +50,7 @@ export function AdminOrdersClient() {
         </div>
       ) : null}
 
-      <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 shadow-card">
+      <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900 shadow-card">
         <div className="grid grid-cols-12 gap-3 border-b border-white/10 px-4 py-3 text-xs font-semibold text-white/60">
           <div className="col-span-4">Customer</div>
           <div className="col-span-2">Total</div>
@@ -67,7 +68,7 @@ export function AdminOrdersClient() {
                   {(o.user?.name ?? "User") + " "}
                   <span className="text-xs text-white/50">{o.user?.email ?? ""}</span>
                 </div>
-                <div className="col-span-2 text-sm text-white/70">${o.totalPrice.toFixed(2)}</div>
+                <div className="col-span-2 text-sm text-white/70">{formatEGP(o.totalPrice)}</div>
                 <div className="col-span-3">
                   <Select
                     value={o.status}

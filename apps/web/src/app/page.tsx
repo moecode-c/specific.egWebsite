@@ -47,10 +47,13 @@ export default async function Home() {
               <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-ink/30">
                 {/* model-viewer is loaded via next/script in RootLayout */}
                 <model-viewer
+                  id="main-3d-model"
                   src="/3dspecific.glb"
                   alt="3D preview of a SPECIFIC case"
                   className="absolute inset-0 block h-full w-full"
                   camera-controls
+                  camera-orbit="90deg 90deg 2.4m" // Ensures model faces user
+                  camera-target="0m 0m 0m"
                   auto-rotate
                   rotation-per-second="20deg"
                   shadow-intensity="0.8"
@@ -58,6 +61,17 @@ export default async function Home() {
                   interaction-prompt="none"
                   style={{ background: "transparent", width: "100%", height: "100%" }}
                 />
+                <script dangerouslySetInnerHTML={{
+                  __html: `
+                    window.addEventListener('DOMContentLoaded', function() {
+                      var mv = document.getElementById('main-3d-model');
+                      if (mv) {
+                        mv.cameraOrbit = '90deg 90deg 2.4m';
+                        mv.cameraTarget = '0m 0m 0m';
+                      }
+                    });
+                  `
+                }} />
               </div>
             </div>
           </div>

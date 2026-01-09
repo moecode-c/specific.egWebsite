@@ -6,8 +6,11 @@ import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 
 export const metadata: Metadata = {
-  title: "SPECIFIC — Premium Mobile Cases",
+  title: "SPECIFIC",
   description: "Luxury-tech mobile cases with premium protection.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -17,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen text-white antialiased">
+      <body className="min-h-screen bg-linear-to-b from-brand via-ink-900 to-brand text-white antialiased">
         <Script
           type="module"
           src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"

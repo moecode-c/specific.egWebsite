@@ -104,7 +104,7 @@ export function ShopClient() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-      <div className="rounded-2xl border border-white/10 bg-ink/35 p-4 shadow-card backdrop-blur">
+      <div className="rounded-2xl border border-white/10 bg-ink p-4 shadow-card">
         <div className="flex items-center gap-2 text-sm font-bold text-white">
           <IconSearch className="text-white/70" />
           Search

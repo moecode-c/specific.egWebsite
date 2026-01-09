@@ -122,7 +122,12 @@ export const api = {
   async createOrder(
     token: string,
     payload: {
-      products: Array<{ productId: string; quantity: number }>;
+      products: Array<{
+        productId: string;
+        quantity: number;
+        phoneModel?: string;
+        color?: string;
+      }>;
       phone: string;
       address: string;
       notes?: string;

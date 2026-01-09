@@ -5,6 +5,8 @@ export type OrderStatus = "pending" | "accepted" | "declined";
 export type OrderItem = {
   product: Types.ObjectId;
   quantity: number;
+  phoneModel?: string;
+  color?: string;
 };
 
 export type OrderDoc = {
@@ -30,6 +32,8 @@ const orderSchema = new Schema<OrderDoc>(
         {
           product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
           quantity: { type: Number, required: true, min: 1 },
+          phoneModel: { type: String, required: false, trim: true, default: "" },
+          color: { type: String, required: false, trim: true, default: "" },
         },
       ],
       default: [],

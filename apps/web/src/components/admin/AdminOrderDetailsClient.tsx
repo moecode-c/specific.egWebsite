@@ -7,6 +7,7 @@ import type { Order } from "../../lib/types";
 import { useAuth } from "../providers/AuthProvider";
 import { Button } from "../ui/Button";
 import { Select } from "../ui/Select";
+import { formatEGP } from "../../lib/money";
 
 export function AdminOrderDetailsClient({ orderId }: { orderId: string }) {
   const { token } = useAuth();
@@ -34,7 +35,7 @@ export function AdminOrderDetailsClient({ orderId }: { orderId: string }) {
   if (!order) return null;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-card">
+    <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 shadow-card">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-sm font-bold text-white">Customer</div>
@@ -45,7 +46,7 @@ export function AdminOrderDetailsClient({ orderId }: { orderId: string }) {
         </div>
         <div className="text-right">
           <div className="text-xs text-white/50">Total</div>
-          <div className="text-xl font-extrabold text-white">${order.totalPrice.toFixed(2)}</div>
+          <div className="text-xl font-extrabold text-white">{formatEGP(order.totalPrice)}</div>
         </div>
       </div>
 
@@ -93,8 +94,23 @@ export function AdminOrderDetailsClient({ orderId }: { orderId: string }) {
               <div className="text-white">
                 {p.product?.name ?? "Product"}
                 <span className="ml-2 text-xs text-white/50">x{p.quantity}</span>
+                {p.phoneModel || p.color ? (
+                  <div className="mt-1 text-xs text-white/60">
+                    {p.phoneModel ? (
+                      <span>
+                        <span className="text-white/50">Model:</span> {p.phoneModel}
+                      </span>
+                    ) : null}
+                    {p.phoneModel && p.color ? <span className="mx-2 text-white/40">•</span> : null}
+                    {p.color ? (
+                      <span>
+                        <span className="text-white/50">Color:</span> {p.color}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
-              <div className="text-white/60">${(p.product?.price ?? 0).toFixed(2)}</div>
+              <div className="text-white/60">{formatEGP(p.product?.price ?? 0)}</div>
             </div>
           ))}
         </div>

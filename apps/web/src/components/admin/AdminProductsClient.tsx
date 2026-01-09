@@ -7,6 +7,7 @@ import type { Product } from "../../lib/types";
 import { useAuth } from "../providers/AuthProvider";
 import { Button } from "../ui/Button";
 import { IconEdit, IconPlus, IconRefresh, IconTrash } from "../Icons";
+import { formatEGP } from "../../lib/money";
 
 export function AdminProductsClient() {
   const { token } = useAuth();
@@ -53,7 +54,7 @@ export function AdminProductsClient() {
         </div>
       ) : null}
 
-      <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 shadow-card">
+      <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900 shadow-card">
         <div className="grid grid-cols-12 gap-3 border-b border-white/10 px-4 py-3 text-xs font-semibold text-white/60">
           <div className="col-span-5">Name</div>
           <div className="col-span-2">Price</div>
@@ -68,7 +69,7 @@ export function AdminProductsClient() {
             {products.map((p) => (
               <div key={p._id} className="grid grid-cols-12 gap-3 px-4 py-3">
                 <div className="col-span-5 text-sm font-semibold text-white">{p.name}</div>
-                <div className="col-span-2 text-sm text-white/70">${p.price.toFixed(2)}</div>
+                <div className="col-span-2 text-sm text-white/70">{formatEGP(p.price)}</div>
                 <div className="col-span-3 text-sm text-white/70">
                   {p.isFeatured ? "Yes" : "No"}
                 </div>

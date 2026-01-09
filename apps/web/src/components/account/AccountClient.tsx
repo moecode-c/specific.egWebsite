@@ -9,6 +9,7 @@ import { RequireAuth } from "../guards/RequireAuth";
 import { useAuth } from "../providers/AuthProvider";
 import { Button } from "../ui/Button";
 import { ProductCard } from "../ProductCard";
+import { formatEGP } from "../../lib/money";
 
 export function AccountClient() {
   const { token } = useAuth();
@@ -48,7 +49,7 @@ export function AccountClient() {
                 orders.map((o) => (
                   <div
                     key={o._id}
-                    className="rounded-2xl border border-white/10 bg-ink/35 p-4 shadow-card backdrop-blur"
+                    className="rounded-2xl border border-white/10 bg-ink-900 p-4 shadow-card"
                   >
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-bold text-white">
@@ -93,12 +94,12 @@ export function AccountClient() {
                       <div className="text-sm text-white/70">
                         Status: <span className="font-semibold text-white">{o.status}</span>
                       </div>
-                      <div className="text-sm font-extrabold text-white">${o.totalPrice.toFixed(2)}</div>
+                      <div className="text-sm font-extrabold text-white">{formatEGP(o.totalPrice)}</div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-sm text-white/70 shadow-card backdrop-blur">
+                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 text-sm text-white/70 shadow-card">
                   No orders yet. <Link className="text-neon-300 hover:text-neon" href="/shop">Shop</Link>.
                 </div>
               )}
@@ -114,8 +115,9 @@ export function AccountClient() {
                     <div key={p._id} className="space-y-3">
                       <ProductCard product={p} />
                       <Button
-                        variant="ghost"
+                        variant="danger"
                         className="w-full"
+                        type="button"
                         onClick={async () => {
                           if (!token) return;
                           await api.wishlistRemove(token, p._id);
@@ -128,7 +130,7 @@ export function AccountClient() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-sm text-white/70 shadow-card backdrop-blur">
+                <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 text-sm text-white/70 shadow-card">
                   Wishlist is empty.
                 </div>
               )}

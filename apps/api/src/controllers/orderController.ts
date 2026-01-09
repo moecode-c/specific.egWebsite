@@ -8,7 +8,12 @@ import { Product } from "../models/Product";
 export async function createOrder(req: AuthedRequest, res: Response) {
   const userId = req.user!.userId;
   const { products, phone, address, notes } = req.body as {
-    products?: Array<{ productId: string; quantity: number }>;
+    products?: Array<{
+      productId: string;
+      quantity: number;
+      phoneModel?: string;
+      color?: string;
+    }>;
     phone?: string;
     address?: string;
     notes?: string;
@@ -26,9 +31,32 @@ export async function createOrder(req: AuthedRequest, res: Response) {
   const orderItems = products.map((p) => {
     const found = docMap.get(p.productId);
     if (!found) throw new HttpError(400, "Invalid product");
+
+    const phoneModel = (p.phoneModel ?? "").trim();
+    const color = (p.color ?? "").trim();
+
+    if (Array.isArray((found as any).phoneModels) && (found as any).phoneModels.length) {
+      if (!phoneModel) throw new HttpError(400, "Phone model is required");
+      if (!(found as any).phoneModels.includes(phoneModel)) {
+        throw new HttpError(400, "Invalid phone model");
+      }
+    }
+
+    if (Array.isArray((found as any).colors) && (found as any).colors.length) {
+      if (!color) throw new HttpError(400, "Color is required");
+      if (!(found as any).colors.includes(color)) {
+        throw new HttpError(400, "Invalid color");
+      }
+    }
+
     const qty = Math.max(1, Number(p.quantity || 1));
     total += found.price * qty;
-    return { product: new mongoose.Types.ObjectId(p.productId), quantity: qty };
+    return {
+      product: new mongoose.Types.ObjectId(p.productId),
+      quantity: qty,
+      phoneModel,
+      color,
+    };
   });
 
   const order = await Order.create({

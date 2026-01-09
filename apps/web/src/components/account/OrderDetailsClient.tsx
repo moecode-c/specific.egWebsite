@@ -6,6 +6,7 @@ import { api, buildUploadUrl } from "../../lib/api";
 import type { Order } from "../../lib/types";
 import { RequireAuth } from "../guards/RequireAuth";
 import { useAuth } from "../providers/AuthProvider";
+import { formatEGP } from "../../lib/money";
 
 export function OrderDetailsClient({ orderId }: { orderId: string }) {
   const { token } = useAuth();
@@ -44,11 +45,11 @@ export function OrderDetailsClient({ orderId }: { orderId: string }) {
       {loading ? (
         <div className="text-sm text-white/60">Loading...</div>
       ) : error ? (
-        <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-sm text-white/70 shadow-card backdrop-blur">
+        <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 text-sm text-white/70 shadow-card">
           {error}
         </div>
       ) : !order ? (
-        <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-sm text-white/70 shadow-card backdrop-blur">
+        <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 text-sm text-white/70 shadow-card">
           Order not found.
         </div>
       ) : (
@@ -68,7 +69,7 @@ export function OrderDetailsClient({ orderId }: { orderId: string }) {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 shadow-card backdrop-blur">
+            <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 shadow-card">
               <div className="text-sm font-bold text-white">Delivery</div>
               <div className="mt-3 space-y-2 text-sm text-white/70">
                 <div>
@@ -85,14 +86,14 @@ export function OrderDetailsClient({ orderId }: { orderId: string }) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 shadow-card backdrop-blur">
+            <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 shadow-card">
               <div className="text-sm font-bold text-white">Total</div>
-              <div className="mt-3 text-2xl font-extrabold text-white">${order.totalPrice.toFixed(2)}</div>
+              <div className="mt-3 text-2xl font-extrabold text-white">{formatEGP(order.totalPrice)}</div>
               <div className="mt-1 text-xs text-white/60">Payment on delivery (as configured).</div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 shadow-card backdrop-blur">
+          <div className="rounded-2xl border border-white/10 bg-ink-900 p-5 shadow-card">
             <div className="text-sm font-bold text-white">Items</div>
             <div className="mt-4 space-y-4">
               {order.products.map((it, idx) => {
@@ -117,11 +118,28 @@ export function OrderDetailsClient({ orderId }: { orderId: string }) {
                       <div>
                         <div className="text-sm font-semibold text-white">{it.product?.name ?? "Product"}</div>
                         <div className="mt-1 text-xs text-white/60">Qty: {it.quantity}</div>
+                        {it.phoneModel || it.color ? (
+                          <div className="mt-1 text-xs text-white/60">
+                            {it.phoneModel ? (
+                              <span>
+                                <span className="text-white/50">Model:</span> {it.phoneModel}
+                              </span>
+                            ) : null}
+                            {it.phoneModel && it.color ? (
+                              <span className="mx-2 text-white/40">•</span>
+                            ) : null}
+                            {it.color ? (
+                              <span>
+                                <span className="text-white/50">Color:</span> {it.color}
+                              </span>
+                            ) : null}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
 
                     <div className="text-sm font-extrabold text-white">
-                      ${((it.product?.price ?? 0) * it.quantity).toFixed(2)}
+                      {formatEGP((it.product?.price ?? 0) * it.quantity)}
                     </div>
                   </div>
                 );

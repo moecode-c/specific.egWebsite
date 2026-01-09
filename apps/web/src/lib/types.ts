@@ -20,10 +20,17 @@ export type User = {
 
 export type OrderStatus = "pending" | "accepted" | "declined";
 
+export type OrderItem = {
+  product: Product;
+  quantity: number;
+  phoneModel?: string;
+  color?: string;
+};
+
 export type Order = {
   _id: string;
   user: any;
-  products: Array<{ product: Product; quantity: number }>;
+  products: OrderItem[];
   totalPrice: number;
   status: OrderStatus;
   phone?: string;
@@ -33,8 +40,11 @@ export type Order = {
 };
 
 export type CartItem = {
+  id: string;
   product: Product;
   quantity: number;
+  phoneModel?: string;
+  color?: string;
 };
 
 export type Review = {

@@ -5,14 +5,23 @@ import type { Product } from "../../lib/types";
 import { buildUploadUrl, api } from "../../lib/api";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
+import { Select } from "../ui/Select";
 import { useCart } from "../providers/CartProvider";
 import { useAuth } from "../providers/AuthProvider";
 import { useToast } from "../providers/ToastProvider";
+import { formatEGP } from "../../lib/money";
 
 export function ProductDetailsClient({ product }: { product: Product }) {
   const images = product.images?.length ? product.images : [];
   const [active, setActive] = useState(0);
   const activeImg = images[active];
+
+  const [selectedPhoneModel, setSelectedPhoneModel] = useState(() =>
+    product.phoneModels?.length === 1 ? product.phoneModels[0] : ""
+  );
+  const [selectedColor, setSelectedColor] = useState(() =>
+    product.colors?.length === 1 ? product.colors[0] : ""
+  );
 
   const { add } = useCart();
   const { toast } = useToast();
@@ -97,11 +106,11 @@ export function ProductDetailsClient({ product }: { product: Product }) {
           {product.isFeatured ? <Badge>Featured</Badge> : null}
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 shadow-card">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-ink-900 p-5 shadow-card">
           <div className="flex items-center justify-between">
             <div className="text-sm text-white/60">Price</div>
             <div className="text-2xl font-extrabold text-white">
-              ${product.price.toFixed(2)}
+              {formatEGP(product.price)}
             </div>
           </div>
 
@@ -118,10 +127,62 @@ export function ProductDetailsClient({ product }: { product: Product }) {
             </div>
           </div>
 
+          {(product.phoneModels?.length || product.colors?.length) ? (
+            <div className="mt-6 grid gap-3">
+              {product.phoneModels?.length ? (
+                <div>
+                  <div className="mb-2 text-xs font-semibold text-white/70">Phone model</div>
+                  <Select
+                    value={selectedPhoneModel}
+                    onChange={(e) => setSelectedPhoneModel(e.target.value)}
+                  >
+                    <option value="" className="bg-ink">
+                      Select phone model
+                    </option>
+                    {product.phoneModels.map((m) => (
+                      <option key={m} value={m} className="bg-ink">
+                        {m}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              ) : null}
+
+              {product.colors?.length ? (
+                <div>
+                  <div className="mb-2 text-xs font-semibold text-white/70">Color</div>
+                  <Select value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)}>
+                    <option value="" className="bg-ink">
+                      Select color
+                    </option>
+                    {product.colors.map((c) => (
+                      <option key={c} value={c} className="bg-ink">
+                        {c}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <Button
               onClick={() => {
-                add(product, 1);
+                setMessage(null);
+                if (product.phoneModels?.length && !selectedPhoneModel) {
+                  setMessage("Please choose a phone model.");
+                  return;
+                }
+                if (product.colors?.length && !selectedColor) {
+                  setMessage("Please choose a color.");
+                  return;
+                }
+
+                add(product, 1, {
+                  phoneModel: selectedPhoneModel || undefined,
+                  color: selectedColor || undefined,
+                });
                 toast({
                   title: "Added to cart",
                   message: product.name,
