@@ -15,7 +15,7 @@ export function Footer() {
             />
             <div>
               <div className="text-lg font-extrabold tracking-wide text-white drop-shadow">SPECIFIC</div>
-              <div className="text-sm text-white/80">Premium mobile cases. Luxury tech protection.</div>
+              <div className="text-sm text-white/80">The Specific Choice for Every Device</div>
             </div>
           </div>
         </div>

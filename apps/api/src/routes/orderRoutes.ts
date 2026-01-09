@@ -3,6 +3,7 @@ import { asyncHandler } from "../middleware/asyncHandler";
 import { requireAdmin, requireAuth } from "../middleware/auth";
 import {
   createOrder,
+  deleteOrder,
   getAllOrders,
   getMyOrders,
   getOrderById,
@@ -21,3 +22,4 @@ orderRoutes.patch(
   requireAdmin,
   asyncHandler(updateOrderStatus)
 );
+orderRoutes.delete("/:id", requireAuth, requireAdmin, asyncHandler(deleteOrder));

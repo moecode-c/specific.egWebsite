@@ -23,8 +23,7 @@ export default async function Home() {
                 <span className="block text-neon-300">Built to feel expensive.</span>
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
-                Dark, minimal, and engineered for everyday protection. Neon accents,
-                soft shadows, and a premium purple core.
+                Elevating your tech style
               </p>
               <div className="mt-7 flex gap-3">
                 <Link href="/shop">

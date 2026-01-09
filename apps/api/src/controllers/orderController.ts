@@ -4,6 +4,11 @@ import { AuthedRequest } from "../middleware/auth";
 import { HttpError } from "../middleware/errorHandler";
 import { Order } from "../models/Order";
 import { Product } from "../models/Product";
+import { User } from "../models/User";
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 export async function createOrder(req: AuthedRequest, res: Response) {
   const userId = req.user!.userId;
@@ -84,13 +89,61 @@ export async function getMyOrders(req: AuthedRequest, res: Response) {
   res.json({ orders });
 }
 
-export async function getAllOrders(_req: AuthedRequest, res: Response) {
-  const orders = await Order.find()
-    .sort({ createdAt: -1 })
+export async function getAllOrders(req: AuthedRequest, res: Response) {
+  const statusRaw = (req.query.status as string | undefined)?.trim();
+  const qRaw = (req.query.q as string | undefined)?.trim();
+  const sortRaw = (req.query.sort as string | undefined)?.trim();
+
+  const filter: Record<string, any> = {};
+
+  if (statusRaw) {
+    if (!['pending', 'accepted', 'declined'].includes(statusRaw)) {
+      throw new HttpError(400, "Invalid status");
+    }
+    filter.status = statusRaw;
+  }
+
+  if (qRaw) {
+    const q = qRaw.slice(0, 120);
+    const safe = escapeRegExp(q);
+    const regex = new RegExp(safe, "i");
+
+    const or: any[] = [{ phone: regex }, { address: regex }, { notes: regex }];
+
+    if (mongoose.Types.ObjectId.isValid(q)) {
+      or.push({ _id: new mongoose.Types.ObjectId(q) });
+    }
+
+    const users = await User.find({ $or: [{ name: regex }, { email: regex }] })
+      .select("_id")
+      .lean();
+    if (users.length) {
+      or.push({ user: { $in: users.map((u) => u._id) } });
+    }
+
+    filter.$or = or;
+  }
+
+  let sort: Record<string, 1 | -1> = { createdAt: -1 };
+  if (sortRaw === "oldest") sort = { createdAt: 1 };
+  if (sortRaw === "total_asc") sort = { totalPrice: 1, createdAt: -1 };
+  if (sortRaw === "total_desc") sort = { totalPrice: -1, createdAt: -1 };
+
+  const orders = await Order.find(filter)
+    .sort(sort)
     .populate("user", "name email")
     .populate("products.product")
     .lean();
+
   res.json({ orders });
+}
+
+export async function deleteOrder(req: AuthedRequest, res: Response) {
+  const { id } = req.params;
+  const order = await Order.findById(id);
+  if (!order) throw new HttpError(404, "Order not found");
+  await order.deleteOne();
+  res.json({ ok: true });
 }
 
 export async function getOrderById(req: AuthedRequest, res: Response) {

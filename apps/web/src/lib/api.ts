@@ -148,8 +148,20 @@ export const api = {
     return apiFetch<{ order: Order }>(`/api/orders/${id}`, { token });
   },
 
-  async adminOrders(token: string) {
-    return apiFetch<{ orders: Order[] }>("/api/orders/all", { token });
+  async adminOrders(
+    token: string,
+    params: {
+      q?: string;
+      status?: "pending" | "accepted" | "declined";
+      sort?: "newest" | "oldest" | "total_asc" | "total_desc";
+    } = {}
+  ) {
+    const sp = new URLSearchParams();
+    if (params.q) sp.set("q", params.q);
+    if (params.status) sp.set("status", params.status);
+    if (params.sort && params.sort !== "newest") sp.set("sort", params.sort);
+    const qs = sp.toString();
+    return apiFetch<{ orders: Order[] }>(`/api/orders/all${qs ? `?${qs}` : ""}` , { token });
   },
 
   async adminOrder(token: string, id: string) {
@@ -166,6 +178,10 @@ export const api = {
       token,
       body: JSON.stringify({ status }),
     });
+  },
+
+  async adminDeleteOrder(token: string, id: string) {
+    return apiFetch<{ ok: true }>(`/api/orders/${id}`, { method: "DELETE", token });
   },
 
   async adminCreateProduct(token: string, form: FormData) {
