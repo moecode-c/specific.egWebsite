@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "../providers/CartProvider";
+import { buildUploadUrl } from "../../lib/api";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { IconArrowRight, IconTrash } from "../Icons";
@@ -23,13 +24,28 @@ export function CartClient() {
         {items.map((i) => (
           <div
             key={i.product._id}
-            className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-card"
+            className="rounded-2xl border border-white/10 bg-ink/35 p-4 shadow-card backdrop-blur"
           >
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-sm font-bold text-white">{i.product.name}</div>
-                <div className="mt-1 text-xs text-white/60">
-                  ${i.product.price.toFixed(2)}
+              <div className="flex items-start gap-4">
+                <div className="h-16 w-16 overflow-hidden rounded-xl border border-white/10 bg-black/20">
+                  {i.product.images?.[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={buildUploadUrl(i.product.images[0])}
+                      alt={i.product.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[10px] text-white/30">
+                      No image
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <div className="text-sm font-bold text-white">{i.product.name}</div>
+                  <div className="mt-1 text-xs text-white/60">${i.product.price.toFixed(2)}</div>
                 </div>
               </div>
               <button
@@ -60,7 +76,7 @@ export function CartClient() {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-card">
+      <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 shadow-card backdrop-blur">
         <div className="text-sm font-bold text-white">Summary</div>
         <div className="mt-4 flex items-center justify-between text-sm">
           <div className="text-white/60">Subtotal</div>

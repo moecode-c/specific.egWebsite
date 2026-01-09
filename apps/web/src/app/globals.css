@@ -8,18 +8,49 @@
 	}
 
 	body {
+		font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 		background-image: radial-gradient(
-				1100px circle at 12% 10%,
-				rgba(176, 38, 255, 0.1),
+				1050px circle at 14% 12%,
+				rgba(176, 38, 255, 0.22),
 				transparent 58%
 			),
 			radial-gradient(
-				900px circle at 72% 22%,
-				rgba(42, 14, 79, 0.65),
+				900px circle at 78% 18%,
+				rgba(255, 45, 154, 0.18),
+				transparent 55%
+			),
+			radial-gradient(
+				1000px circle at 22% 88%,
+				rgba(176, 38, 255, 0.16),
 				transparent 60%
 			),
-			linear-gradient(180deg, rgba(6, 3, 12, 0.9) 0%, rgba(5, 3, 10, 1) 55%, rgba(4, 2, 8, 1) 100%);
+			radial-gradient(
+				900px circle at 82% 92%,
+				rgba(255, 45, 154, 0.14),
+				transparent 62%
+			),
+			radial-gradient(
+				820px circle at 62% 78%,
+				rgba(42, 14, 79, 0.7),
+				transparent 60%
+			),
+			linear-gradient(180deg, rgba(8, 3, 18, 0.96) 0%, rgba(5, 3, 10, 1) 52%, rgba(4, 2, 8, 1) 100%);
 		background-attachment: fixed;
+	}
+
+	select {
+		color-scheme: dark;
+	}
+
+	select,
+	option {
+		background-color: #0b0715;
+		color: rgba(255, 255, 255, 0.92);
+	}
+
+	option:checked {
+		background-color: #0b0715;
+		color: rgba(255, 255, 255, 0.92);
 	}
 }
 

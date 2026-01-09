@@ -9,7 +9,7 @@ export function Footer() {
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo.svg"
+              src="/logo.jpg"
               alt="SPECIFIC"
               className="h-9 w-9 rounded-2xl shadow-glow"
             />

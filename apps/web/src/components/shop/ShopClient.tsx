@@ -10,9 +10,6 @@ import { ProductCard } from "../ProductCard";
 import { Button } from "../ui/Button";
 import { IconFilter, IconRefresh, IconSearch, IconSort } from "../Icons";
 
-const PHONE_MODELS = ["", "13", "14", "14 Pro", "15", "15 Pro", "17"];
-const COLORS = ["", "Black", "Neon Purple", "Clear", "Purple Tint"];
-
 export function ShopClient() {
   const sp = useSearchParams();
   const router = useRouter();
@@ -33,6 +30,32 @@ export function ShopClient() {
   const maxPrice = sp.get("maxPrice") ?? "";
 
   const queryKey = useMemo(() => sp.toString(), [sp]);
+
+  const phoneModelOptions = useMemo(() => {
+    const values = Array.from(
+      new Set(
+        products
+          .flatMap((p) => (Array.isArray(p.phoneModels) ? p.phoneModels : []))
+          .map((v) => (v ?? "").trim())
+          .filter(Boolean)
+      )
+    ).sort((a, b) => a.localeCompare(b));
+    if (phoneModel && !values.includes(phoneModel)) values.unshift(phoneModel);
+    return ["", ...values];
+  }, [products, phoneModel]);
+
+  const colorOptions = useMemo(() => {
+    const values = Array.from(
+      new Set(
+        products
+          .flatMap((p) => (Array.isArray(p.colors) ? p.colors : []))
+          .map((v) => (v ?? "").trim())
+          .filter(Boolean)
+      )
+    ).sort((a, b) => a.localeCompare(b));
+    if (color && !values.includes(color)) values.unshift(color);
+    return ["", ...values];
+  }, [products, color]);
 
   useEffect(() => {
     let cancelled = false;
@@ -123,7 +146,7 @@ export function ShopClient() {
                 value={phoneModel}
                 onChange={(e) => setParam("phoneModel", e.target.value)}
               >
-                {PHONE_MODELS.map((m) => (
+                {phoneModelOptions.map((m) => (
                   <option key={m} value={m} className="bg-ink">
                     {m ? m : "All"}
                   </option>
@@ -139,7 +162,7 @@ export function ShopClient() {
                 value={color}
                 onChange={(e) => setParam("color", e.target.value)}
               >
-                {COLORS.map((c) => (
+                {colorOptions.map((c) => (
                   <option key={c} value={c} className="bg-ink">
                     {c ? c : "All"}
                   </option>

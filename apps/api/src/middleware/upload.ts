@@ -1,9 +1,17 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+
+const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    cb(null, path.join(process.cwd(), "uploads"));
+    try {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    } catch {
+      // ignore
+    }
+    cb(null, uploadsDir);
   },
   filename: (_req, file, cb) => {
     const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");

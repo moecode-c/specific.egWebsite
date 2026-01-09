@@ -9,6 +9,7 @@ import { useAuth } from "../providers/AuthProvider";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Card } from "../ui/Card";
+import { buildUploadUrl } from "../../lib/api";
 
 export function AdminProductForm({
   mode,
@@ -29,6 +30,7 @@ export function AdminProductForm({
   const [colors, setColors] = useState("Black, Neon Purple");
   const [isFeatured, setIsFeatured] = useState(false);
   const [images, setImages] = useState<FileList | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (mode !== "edit" || !productId) return;
@@ -42,6 +44,7 @@ export function AdminProductForm({
         setPhoneModels(product.phoneModels.join(", "));
         setColors(product.colors?.join(", ") ?? "");
         setIsFeatured(Boolean(product.isFeatured));
+        setExistingImages(product.images ?? []);
       })
       .catch((e) => setError(e.message || "Failed"))
       .finally(() => setLoading(false));
@@ -121,7 +124,29 @@ export function AdminProductForm({
           </label>
 
           <div>
-            <div className="text-sm font-semibold text-white">Upload images</div>
+            <div className="text-sm font-semibold text-white">Images</div>
+            {existingImages.length ? (
+              <div className="mt-3 flex gap-3 overflow-auto">
+                {existingImages.map((img) => (
+                  <div
+                    key={img}
+                    className="h-20 w-20 flex-none overflow-hidden rounded-2xl border border-white/10 bg-black/30"
+                    title={img}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={buildUploadUrl(img)}
+                      alt="Product"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-2 text-xs text-white/50">No images yet.</div>
+            )}
+
+            <div className="mt-5 text-sm font-semibold text-white">Upload new images</div>
             <input
               className="mt-2 block w-full text-sm text-white/70 file:mr-4 file:rounded-2xl file:border-0 file:bg-brand file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700"
               type="file"

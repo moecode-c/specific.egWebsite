@@ -7,6 +7,7 @@ import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
 import { useCart } from "../providers/CartProvider";
 import { useAuth } from "../providers/AuthProvider";
+import { useToast } from "../providers/ToastProvider";
 
 export function ProductDetailsClient({ product }: { product: Product }) {
   const images = product.images?.length ? product.images : [];
@@ -14,6 +15,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   const activeImg = images[active];
 
   const { add } = useCart();
+  const { toast } = useToast();
   const { token, user } = useAuth();
   const [wishLoading, setWishLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -117,7 +119,17 @@ export function ProductDetailsClient({ product }: { product: Product }) {
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <Button onClick={() => add(product, 1)}>Add to cart</Button>
+            <Button
+              onClick={() => {
+                add(product, 1);
+                toast({
+                  title: "Added to cart",
+                  message: product.name,
+                });
+              }}
+            >
+              Add to cart
+            </Button>
             <Button variant="ghost" disabled={wishLoading} onClick={addWishlist}>
               {user ? "Add to wishlist" : "Wishlist (login)"}
             </Button>

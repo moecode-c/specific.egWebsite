@@ -26,10 +26,23 @@ export type Order = {
   products: Array<{ product: Product; quantity: number }>;
   totalPrice: number;
   status: OrderStatus;
+  phone?: string;
+  address?: string;
+  notes?: string;
   createdAt: string;
 };
 
 export type CartItem = {
   product: Product;
   quantity: number;
+};
+
+export type Review = {
+  _id: string;
+  name: string;
+  rating: number;
+  title: string;
+  body: string;
+  isFeatured: boolean;
+  createdAt: string;
 };

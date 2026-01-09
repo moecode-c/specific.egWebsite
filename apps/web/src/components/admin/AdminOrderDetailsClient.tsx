@@ -69,6 +69,23 @@ export function AdminOrderDetailsClient({ orderId }: { orderId: string }) {
       </div>
 
       <div className="mt-6">
+        <div className="text-sm font-bold text-white">Contact</div>
+        <div className="mt-2 grid gap-2 text-sm text-white/70">
+          <div>
+            <span className="text-white/50">Phone:</span> {order.phone ?? "—"}
+          </div>
+          <div>
+            <span className="text-white/50">Address:</span> {order.address ?? "—"}
+          </div>
+          {order.notes ? (
+            <div>
+              <span className="text-white/50">Notes:</span> {order.notes}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="mt-6">
         <div className="text-sm font-bold text-white">Products</div>
         <div className="mt-3 space-y-2">
           {order.products.map((p: any, idx: number) => (

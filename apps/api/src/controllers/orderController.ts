@@ -7,11 +7,16 @@ import { Product } from "../models/Product";
 
 export async function createOrder(req: AuthedRequest, res: Response) {
   const userId = req.user!.userId;
-  const { products } = req.body as {
+  const { products, phone, address, notes } = req.body as {
     products?: Array<{ productId: string; quantity: number }>;
+    phone?: string;
+    address?: string;
+    notes?: string;
   };
 
   if (!products?.length) throw new HttpError(400, "No products");
+  if (!phone?.trim()) throw new HttpError(400, "Phone is required");
+  if (!address?.trim()) throw new HttpError(400, "Address is required");
 
   const productIds = products.map((p) => p.productId);
   const docs = await Product.find({ _id: { $in: productIds } }).lean();
@@ -28,6 +33,9 @@ export async function createOrder(req: AuthedRequest, res: Response) {
 
   const order = await Order.create({
     user: new mongoose.Types.ObjectId(userId),
+    phone: phone.trim(),
+    address: address.trim(),
+    notes: (notes ?? "").trim(),
     products: orderItems,
     totalPrice: total,
     status: "pending",

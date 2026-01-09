@@ -13,12 +13,18 @@ export type OrderDoc = {
   products: OrderItem[];
   totalPrice: number;
   status: OrderStatus;
+  phone: string;
+  address: string;
+  notes?: string;
   createdAt: Date;
 };
 
 const orderSchema = new Schema<OrderDoc>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    phone: { type: String, required: true, trim: true },
+    address: { type: String, required: true, trim: true },
+    notes: { type: String, required: false, trim: true, default: "" },
     products: {
       type: [
         {

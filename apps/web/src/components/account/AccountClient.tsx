@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import type { Order, Product } from "../../lib/types";
+import { buildUploadUrl } from "../../lib/api";
 import { RequireAuth } from "../guards/RequireAuth";
 import { useAuth } from "../providers/AuthProvider";
 import { Button } from "../ui/Button";
@@ -47,12 +48,47 @@ export function AccountClient() {
                 orders.map((o) => (
                   <div
                     key={o._id}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-card"
+                    className="rounded-2xl border border-white/10 bg-ink/35 p-4 shadow-card backdrop-blur"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-bold text-white">Order</div>
+                      <div className="text-sm font-bold text-white">
+                        Order <span className="text-white/60">#{o._id.slice(-6).toUpperCase()}</span>
+                      </div>
                       <div className="text-xs text-white/60">{new Date(o.createdAt).toLocaleString()}</div>
                     </div>
+
+                    <div className="mt-3 flex items-center justify-between gap-4">
+                      <div className="flex -space-x-2">
+                        {(o.products ?? []).slice(0, 4).map((it, idx) => (
+                          <div
+                            key={`${o._id}_${idx}`}
+                            className="h-9 w-9 overflow-hidden rounded-full border border-white/10 bg-black/20"
+                            title={it.product?.name}
+                          >
+                            {it.product?.images?.[0] ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={buildUploadUrl(it.product.images[0])}
+                                alt={it.product.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[9px] text-white/30">
+                                —
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <Link
+                        href={`/account/orders/${o._id}`}
+                        className="text-xs text-neon-300 hover:text-neon"
+                      >
+                        View details
+                      </Link>
+                    </div>
+
                     <div className="mt-3 flex items-center justify-between">
                       <div className="text-sm text-white/70">
                         Status: <span className="font-semibold text-white">{o.status}</span>
@@ -62,7 +98,7 @@ export function AccountClient() {
                   </div>
                 ))
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 shadow-card">
+                <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-sm text-white/70 shadow-card backdrop-blur">
                   No orders yet. <Link className="text-neon-300 hover:text-neon" href="/shop">Shop</Link>.
                 </div>
               )}
@@ -92,7 +128,7 @@ export function AccountClient() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 shadow-card">
+                <div className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-sm text-white/70 shadow-card backdrop-blur">
                   Wishlist is empty.
                 </div>
               )}

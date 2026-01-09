@@ -1,4 +1,4 @@
-import type { Order, Product, User } from "./types";
+import type { Order, Product, Review, User } from "./types";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:5000";
@@ -100,19 +100,47 @@ export const api = {
     });
   },
 
+  async adminUsers(token: string) {
+    return apiFetch<{ users: User[] }>("/api/users", { token });
+  },
+
+  async adminCreateUser(
+    token: string,
+    payload: { name: string; email: string; password: string; role?: "user" | "admin" }
+  ) {
+    return apiFetch<{ user: User }>("/api/users", {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async adminDeleteUser(token: string, id: string) {
+    return apiFetch<{ ok: true }>(`/api/users/${id}`, { method: "DELETE", token });
+  },
+
   async createOrder(
     token: string,
-    products: Array<{ productId: string; quantity: number }>
+    payload: {
+      products: Array<{ productId: string; quantity: number }>;
+      phone: string;
+      address: string;
+      notes?: string;
+    }
   ) {
     return apiFetch<{ message: string; order: Order }>("/api/orders", {
       method: "POST",
       token,
-      body: JSON.stringify({ products }),
+      body: JSON.stringify(payload),
     });
   },
 
   async myOrders(token: string) {
     return apiFetch<{ orders: Order[] }>("/api/orders/mine", { token });
+  },
+
+  async order(token: string, id: string) {
+    return apiFetch<{ order: Order }>(`/api/orders/${id}`, { token });
   },
 
   async adminOrders(token: string) {
@@ -153,5 +181,33 @@ export const api = {
 
   async adminDeleteProduct(token: string, id: string) {
     return apiFetch<{ ok: true }>(`/api/products/${id}`, { method: "DELETE", token });
+  },
+
+  async reviews(params: { featured?: boolean; limit?: number } = {}) {
+    const sp = new URLSearchParams();
+    if (params.featured !== undefined) sp.set("featured", String(params.featured));
+    if (params.limit !== undefined) sp.set("limit", String(params.limit));
+    const qs = sp.toString();
+    return apiFetch<{ reviews: Review[] }>(`/api/reviews${qs ? `?${qs}` : ""}`);
+  },
+
+  async adminCreateReview(token: string, payload: { name: string; rating: number; title: string; body: string; isFeatured: boolean }) {
+    return apiFetch<{ review: Review }>("/api/reviews", {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async adminUpdateReview(token: string, id: string, payload: Partial<{ name: string; rating: number; title: string; body: string; isFeatured: boolean }>) {
+    return apiFetch<{ review: Review }>(`/api/reviews/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async adminDeleteReview(token: string, id: string) {
+    return apiFetch<{ ok: true }>(`/api/reviews/${id}`, { method: "DELETE", token });
   },
 };

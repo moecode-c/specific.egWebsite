@@ -31,7 +31,7 @@ export function RegisterForm() {
           try {
             const res = await api.register({ name, email, password });
             setAuth(res.token, res.user);
-            router.push("/account");
+            router.push("/");
           } catch (e: any) {
             setError(e.message || "Register failed");
           } finally {

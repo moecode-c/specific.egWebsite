@@ -30,7 +30,7 @@ export function LoginForm() {
           try {
             const res = await api.login({ email, password });
             setAuth(res.token, res.user);
-            router.push("/account");
+            router.push("/");
           } catch (e: any) {
             setError(e.message || "Login failed");
           } finally {

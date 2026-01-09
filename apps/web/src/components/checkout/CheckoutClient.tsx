@@ -8,12 +8,16 @@ import { useCart } from "../providers/CartProvider";
 import { RequireAuth } from "../guards/RequireAuth";
 import { Button } from "../ui/Button";
 import { IconSparkle } from "../Icons";
+import { Input } from "../ui/Input";
 
 export function CheckoutClient() {
   const { token } = useAuth();
   const { items, subtotal, clear } = useCart();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
 
   return (
     <RequireAuth>
@@ -24,7 +28,31 @@ export function CheckoutClient() {
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-card">
-            <div className="text-sm font-bold text-white">Order items</div>
+            <div className="text-sm font-bold text-white">Order details</div>
+            <div className="mt-4 grid gap-3">
+              <Input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Phone number"
+                autoComplete="tel"
+                required
+              />
+              <Input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Address / location"
+                autoComplete="street-address"
+                required
+              />
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Notes (optional)"
+                className="min-h-24 w-full resize-y rounded-2xl border border-white/10 bg-ink/35 px-4 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-neon/40 focus:ring-2 focus:ring-neon/20"
+              />
+            </div>
+
+            <div className="mt-7 text-sm font-bold text-white">Order items</div>
             <div className="mt-4 space-y-3">
               {items.map((i) => (
                 <div key={i.product._id} className="flex items-center justify-between">
@@ -64,13 +92,22 @@ export function CheckoutClient() {
                 onClick={async () => {
                   setMessage(null);
                   if (!token) return;
+                  if (!phone.trim() || !address.trim()) {
+                    setMessage("Please enter phone number and address.");
+                    return;
+                  }
                   setLoading(true);
                   try {
-                    const payload = items.map((i) => ({
+                    const products = items.map((i) => ({
                       productId: i.product._id,
                       quantity: i.quantity,
                     }));
-                    const res = await api.createOrder(token, payload);
+                    const res = await api.createOrder(token, {
+                      products,
+                      phone,
+                      address,
+                      notes,
+                    });
                     clear();
                     setMessage(res.message);
                   } catch (e: any) {

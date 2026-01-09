@@ -5,9 +5,11 @@ import { ProductCard } from "../components/ProductCard";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { IconArrowRight, IconSparkle } from "../components/Icons";
+import ScrollVelocity from "../components/ScrollVelocity";
 
 export default async function Home() {
   const { products } = await api.products({ featured: true, sort: "newest" });
+  const { reviews } = await api.reviews({ featured: true, limit: 3 });
 
   return (
     <div>
@@ -42,27 +44,33 @@ export default async function Home() {
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-ink/40 p-6 shadow-card backdrop-blur">
-              <div className="aspect-[4/3] w-full rounded-2xl border border-white/10 bg-black/25 p-6">
-                <div className="grid h-full place-items-center text-center">
-                  <div>
-                    <div className="text-xs font-semibold tracking-wide text-white/50">
-                      3D PREVIEW
-                    </div>
-                    <div className="mt-2 text-lg font-extrabold text-white">
-                      Model Placeholder
-                    </div>
-                    <div className="mt-2 text-sm text-white/60">
-                      You&apos;ll add it later using <span className="text-white/80">model-viewer</span>.
-                    </div>
-                    <div className="mt-4 text-xs text-white/45">
-                      Keep this container; swap the content with a <span className="text-white/70">&lt;model-viewer&gt;</span>.
-                    </div>
-                  </div>
-                </div>
+              <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-ink/30">
+                {/* model-viewer is loaded via next/script in RootLayout */}
+                <model-viewer
+                  src="/3dspecific.glb"
+                  alt="3D preview of a SPECIFIC case"
+                  className="absolute inset-0 block h-full w-full"
+                  camera-controls
+                  auto-rotate
+                  rotation-per-second="20deg"
+                  shadow-intensity="0.8"
+                  exposure="1"
+                  interaction-prompt="none"
+                  style={{ background: "transparent", width: "100%", height: "100%" }}
+                />
               </div>
             </div>
           </div>
         </Container>
+      </section>
+
+      <section className="py-6">
+        <ScrollVelocity
+          texts={["SPECIFIC  •  PREMIUM CASES  •  VIBRANT PROTECTION", "NEON PURPLE  •  PINK GLOW  •  LUXURY TECH"]}
+          velocity={110}
+          className="text-white"
+          parallaxClassName="py-2"
+        />
       </section>
 
       <section className="py-10">
@@ -92,20 +100,29 @@ export default async function Home() {
 
       <section className="py-10">
         <Container>
-          <h2 className="text-xl font-extrabold text-white">Categories</h2>
-          <p className="mt-1 text-sm text-white/60">
-            Browse by phone compatibility.
-          </p>
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {["13", "14 Pro", "15", "17"].map((m) => (
-              <Link
-                key={m}
-                href={`/shop?phoneModel=${encodeURIComponent(m)}`}
-                className="rounded-2xl border border-white/10 bg-ink/35 p-5 text-center shadow-card backdrop-blur transition hover:border-neon/30"
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-white">Reviews</h2>
+              <p className="mt-1 text-sm text-white/60">What customers are saying.</p>
+            </div>
+            <Link className="text-sm text-neon-300 hover:text-neon" href="/reviews-testimonials">
+              View all
+            </Link>
+          </div>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {reviews.map((r) => (
+              <div
+                key={r._id}
+                className="rounded-2xl border border-white/10 bg-ink/35 p-6 shadow-card backdrop-blur transition hover:border-neon/30"
               >
-                <div className="text-xs text-white/50">Phone</div>
-                <div className="mt-2 text-base font-bold text-white">{m}</div>
-              </Link>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-sm font-extrabold text-white">{r.title}</div>
+                  <div className="text-xs text-white/60">{r.rating}/5</div>
+                </div>
+                <div className="mt-2 text-sm text-white/70">{r.body}</div>
+                <div className="mt-4 text-xs text-white/50">— {r.name}</div>
+              </div>
             ))}
           </div>
         </Container>
