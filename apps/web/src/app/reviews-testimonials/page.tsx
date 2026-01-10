@@ -1,8 +1,9 @@
 import { Container } from "../../components/Container";
 import { api } from "../../lib/api";
+import type { Review } from "../../lib/types";
 
 export default async function ReviewsTestimonialsPage() {
-  let reviews = [];
+  let reviews: Review[] = [];
   try {
     const res = await api.reviews({});
     reviews = res.reviews || [];

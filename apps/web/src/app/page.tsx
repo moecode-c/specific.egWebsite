@@ -6,10 +6,11 @@ import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { IconArrowRight, IconSparkle } from "../components/Icons";
 import ScrollVelocity from "../components/ScrollVelocity";
+import type { Product, Review } from "../lib/types";
 
 export default async function Home() {
-  let products = [];
-  let reviews = [];
+  let products: Product[] = [];
+  let reviews: Review[] = [];
   
   try {
     const productsRes = await api.products({ featured: true, sort: "newest" });
