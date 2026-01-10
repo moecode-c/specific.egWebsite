@@ -4,14 +4,36 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import rateLimit from "express-rate-limit";
+import mongoose from "mongoose";
 
 import { authRoutes } from "./routes/authRoutes";
 import { productRoutes } from "./routes/productRoutes";
 import { orderRoutes } from "./routes/orderRoutes";
 import { userRoutes } from "./routes/userRoutes";
 import { reviewRoutes } from "./routes/reviewRoutes";
-import { env } from "./utils/env";
+import { assertEnv, env } from "./utils/env";
+import { connectDb } from "./utils/db";
 import { errorHandler, notFound } from "./middleware/errorHandler";
+
+let dbInitPromise: Promise<void> | null = null;
+
+function normalizeOrigin(value: string) {
+  return value.replace(/\/$/, "");
+}
+
+async function ensureDbConnected() {
+  if (mongoose.connection.readyState === 1) return;
+
+  if (!dbInitPromise) {
+    assertEnv();
+    dbInitPromise = connectDb().catch((err) => {
+      dbInitPromise = null;
+      throw err;
+    });
+  }
+
+  await dbInitPromise;
+}
 
 export function createApp() {
   const app = express();
@@ -35,9 +57,16 @@ export function createApp() {
     legacyHeaders: false,
   });
 
+  const allowedOrigins = [normalizeOrigin(env.CLIENT_URL), "http://localhost:3000"];
+
   app.use(
     cors({
-      origin: [env.CLIENT_URL, "http://localhost:3000"],
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const normalized = normalizeOrigin(origin);
+        if (allowedOrigins.includes(normalized)) return callback(null, true);
+        return callback(new Error("Not allowed by CORS"));
+      },
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
@@ -51,6 +80,16 @@ export function createApp() {
   app.use(morgan("dev"));
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
+
+  // Ensure DB connection for API requests (CORS preflights are handled by cors() above).
+  app.use(async (_req, _res, next) => {
+    try {
+      await ensureDbConnected();
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
 
   app.use("/api", apiLimiter);
 
