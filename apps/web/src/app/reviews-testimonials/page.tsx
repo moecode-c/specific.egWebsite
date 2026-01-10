@@ -2,7 +2,13 @@ import { Container } from "../../components/Container";
 import { api } from "../../lib/api";
 
 export default async function ReviewsTestimonialsPage() {
-  const { reviews } = await api.reviews({});
+  let reviews = [];
+  try {
+    const res = await api.reviews({});
+    reviews = res.reviews || [];
+  } catch (error) {
+    console.error("Failed to fetch reviews:", error);
+  }
 
   return (
     <div className="py-10">

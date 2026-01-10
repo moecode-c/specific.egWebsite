@@ -8,8 +8,22 @@ import { IconArrowRight, IconSparkle } from "../components/Icons";
 import ScrollVelocity from "../components/ScrollVelocity";
 
 export default async function Home() {
-  const { products } = await api.products({ featured: true, sort: "newest" });
-  const { reviews } = await api.reviews({ featured: true, limit: 3 });
+  let products = [];
+  let reviews = [];
+  
+  try {
+    const productsRes = await api.products({ featured: true, sort: "newest" });
+    products = productsRes.products || [];
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+  }
+  
+  try {
+    const reviewsRes = await api.reviews({ featured: true, limit: 3 });
+    reviews = reviewsRes.reviews || [];
+  } catch (error) {
+    console.error("Failed to fetch reviews:", error);
+  }
 
   return (
     <div>

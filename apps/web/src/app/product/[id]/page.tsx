@@ -7,7 +7,23 @@ export default async function ProductPage({
 }: {
   params: { id: string };
 }) {
-  const { product } = await api.product(params.id);
+  let product = null;
+  try {
+    const res = await api.product(params.id);
+    product = res.product;
+  } catch (error) {
+    console.error("Failed to fetch product:", error);
+  }
+  
+  if (!product) {
+    return (
+      <div className="py-10">
+        <Container>
+          <p className="text-white">Product not found</p>
+        </Container>
+      </div>
+    );
+  }
 
   return (
     <div className="py-10">
