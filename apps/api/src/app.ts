@@ -13,6 +13,7 @@ import { userRoutes } from "./routes/userRoutes";
 import { reviewRoutes } from "./routes/reviewRoutes";
 import { assertEnv, env } from "./utils/env";
 import { connectDb } from "./utils/db";
+import { ensureUploadsDir, getUploadsDir } from "./utils/uploads";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 
 let dbInitPromise: Promise<void> | null = null;
@@ -38,7 +39,12 @@ async function ensureDbConnected() {
 export function createApp() {
   const app = express();
 
-  const uploadsDir = path.resolve(__dirname, "..", "uploads");
+  const uploadsDir = getUploadsDir();
+  try {
+    ensureUploadsDir(uploadsDir);
+  } catch {
+    // If uploads can't be created, uploads will fail and surface via route error.
+  }
 
   app.disable("x-powered-by");
 

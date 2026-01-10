@@ -1,17 +1,16 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
+import { ensureUploadsDir, getUploadsDir } from "../utils/uploads";
 
-const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+const uploadsDir = getUploadsDir();
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     try {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    } catch {
-      // ignore
+      ensureUploadsDir(uploadsDir);
+      cb(null, uploadsDir);
+    } catch (err) {
+      cb(err as Error, uploadsDir);
     }
-    cb(null, uploadsDir);
   },
   filename: (_req, file, cb) => {
     const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");
