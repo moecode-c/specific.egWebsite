@@ -4,7 +4,7 @@ import { Container } from "../components/Container";
 import { ProductCard } from "../components/ProductCard";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
-import { IconArrowRight, IconSparkle } from "../components/Icons";
+import { IconArrowRight, IconSparkle, IconInstagram } from "../components/Icons";
 import ScrollVelocity from "../components/ScrollVelocity";
 import type { Product, Review } from "../lib/types";
 
@@ -28,6 +28,8 @@ export default async function Home() {
 
   return (
     <div>
+
+            
       <section className="py-14">
         <Container>
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
@@ -155,6 +157,29 @@ export default async function Home() {
           </div>
         </Container>
       </section>
+
+      {/* Contact Information Section (moved to end) */}
+            <section className="py-14">
+              <Container>
+                <div className="rounded-2xl border border-white/10 bg-ink/40 p-8 shadow-card backdrop-blur max-w-xl mx-auto">
+                  <h2 className="text-2xl font-extrabold text-white mb-4 text-center">Contact Information</h2>
+                  <div className="flex flex-col gap-4 items-center text-white/80">
+                    <span className="flex items-center gap-2">
+                      <IconInstagram size={20} className="text-pink-400" />
+                      <a href="https://www.instagram.com/specific.eg/" target="_blank" rel="noopener" className="underline">Instagram</a>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24" className="inline-block text-blue-400"><path d="M4 4h16v16H4z"/><path d="M4 4l8 8 8-8"/></svg>
+                      <a href="mailto:specific.eg@gmail.com" className="underline">specific.eg@gmail.com</a>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24" className="inline-block text-green-400"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.76 3.88.76a1 1 0 011 1v3.5a1 1 0 01-1 1C5.92 22 2 18.08 2 13.5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.35.27 2.67.76 3.88a1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
+                      <a href="tel:01055708429" className="underline">01055708429</a>
+                    </span>
+                  </div>
+                </div>
+              </Container>
+            </section>
     </div>
   );
 }

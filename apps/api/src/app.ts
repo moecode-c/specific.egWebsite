@@ -93,7 +93,15 @@ export function createApp() {
 
   app.use("/api", apiLimiter);
 
-  app.use("/uploads", express.static(uploadsDir));
+  // Uploaded assets have unique filenames (see multer storage), so we can safely
+  // cache them aggressively.
+  app.use(
+    "/uploads",
+    express.static(uploadsDir, {
+      immutable: true,
+      maxAge: "365d",
+    })
+  );
 
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
   app.use("/api/auth", authLimiter, authRoutes);

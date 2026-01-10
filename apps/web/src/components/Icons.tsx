@@ -1,3 +1,12 @@
+export function IconInstagram(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.7" fill="none" />
+      <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.7" fill="none" />
+      <circle cx="17" cy="7" r="1.2" fill="currentColor" />
+    </BaseIcon>
+  );
+}
 import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement> & {
