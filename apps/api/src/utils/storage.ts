@@ -95,7 +95,7 @@ export async function storageHealthCheck() {
       bucket,
       host,
       error: error.message,
-      statusCode: error.statusCode,
+      statusCode: (error as any)?.statusCode,
     };
   }
 
