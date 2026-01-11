@@ -8,6 +8,9 @@ import { IconArrowRight, IconSparkle, IconInstagram } from "../components/Icons"
 import ScrollVelocity from "../components/ScrollVelocity";
 import type { Product, Review } from "../lib/types";
 
+// Allow dynamic rendering because we use no-store fetches for live product/review data.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let products: Product[] = [];
   let reviews: Review[] = [];
