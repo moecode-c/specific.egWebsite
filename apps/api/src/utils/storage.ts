@@ -80,10 +80,20 @@ export async function storageHealthCheck() {
 
   const { data, error } = await supabase.storage.from(bucket).list("", { limit: 1 });
 
+  const host = (() => {
+    try {
+      const url = new URL(env.SUPABASE_URL);
+      return url.host;
+    } catch {
+      return "invalid-supabase-url";
+    }
+  })();
+
   if (error) {
     return {
       ok: false,
       bucket,
+      host,
       error: error.message,
       statusCode: error.statusCode,
     };
@@ -92,6 +102,7 @@ export async function storageHealthCheck() {
   return {
     ok: true,
     bucket,
+    host,
     sample: data?.[0]?.name ?? null,
   };
 }
