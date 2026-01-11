@@ -65,6 +65,8 @@ export const api = {
     color?: string;
     featured?: boolean;
     sort?: "price_asc" | "price_desc" | "newest";
+    page?: number;
+    limit?: number;
   }) {
     const sp = new URLSearchParams();
     if (params.q) sp.set("q", params.q);
@@ -74,7 +76,9 @@ export const api = {
     if (params.color) sp.set("color", params.color);
     if (params.featured !== undefined) sp.set("featured", String(params.featured));
     if (params.sort) sp.set("sort", params.sort);
-    return apiFetch<{ products: Product[] }>(`/api/products?${sp.toString()}`);
+    if (params.page !== undefined) sp.set("page", String(params.page));
+    if (params.limit !== undefined) sp.set("limit", String(params.limit));
+    return apiFetch<{ products: Product[]; total: number; page: number; pageSize: number; totalPages: number }>(`/api/products?${sp.toString()}`);
   },
 
   async product(id: string) {

@@ -5,6 +5,7 @@ import morgan from "morgan";
 import path from "path";
 import rateLimit from "express-rate-limit";
 import mongoose from "mongoose";
+import compression from "compression";
 
 import { authRoutes } from "./routes/authRoutes";
 import { productRoutes } from "./routes/productRoutes";
@@ -47,6 +48,9 @@ export function createApp() {
   }
 
   app.disable("x-powered-by");
+
+  // Compress JSON responses to reduce bandwidth usage.
+  app.use(compression());
 
   // Basic rate limiting (tune values as needed)
   const apiLimiter = rateLimit({

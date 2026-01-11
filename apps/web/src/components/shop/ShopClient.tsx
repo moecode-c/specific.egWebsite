@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "../../lib/api";
 import type { Product } from "../../lib/types";
+import { ProductCard } from "../ProductCard";
+import { IconFilter, IconRefresh, IconSearch, IconSort } from "../Icons";
+import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
-import { ProductCard } from "../ProductCard";
-import { Button } from "../ui/Button";
-import { IconFilter, IconRefresh, IconSearch, IconSort } from "../Icons";
 
 export function ShopClient() {
   const sp = useSearchParams();
@@ -17,17 +17,16 @@ export function ShopClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [pageMeta, setPageMeta] = useState({ page: 1, totalPages: 1, total: 0 });
 
   const q = sp.get("q") ?? "";
   const phoneModel = sp.get("phoneModel") ?? "";
   const color = sp.get("color") ?? "";
   const featured = sp.get("featured") ?? "";
-  const sort = (sp.get("sort") ?? "newest") as
-    | "newest"
-    | "price_asc"
-    | "price_desc";
+  const sort = (sp.get("sort") ?? "newest") as "newest" | "price_asc" | "price_desc";
   const minPrice = sp.get("minPrice") ?? "";
   const maxPrice = sp.get("maxPrice") ?? "";
+  const page = Math.max(Number(sp.get("page") || "1"), 1);
 
   const queryKey = useMemo(() => sp.toString(), [sp]);
 
@@ -71,10 +70,13 @@ export function ShopClient() {
         sort: sort === "newest" ? "newest" : sort,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        page,
+        limit: 24,
       })
-      .then(({ products }) => {
+      .then(({ products, page: currentPage, total, totalPages }) => {
         if (cancelled) return;
         setProducts(products);
+        setPageMeta({ page: currentPage, totalPages, total });
       })
       .catch((e) => {
         if (cancelled) return;
@@ -89,12 +91,13 @@ export function ShopClient() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryKey]);
+  }, [queryKey, page]);
 
   function setParam(key: string, value: string) {
     const next = new URLSearchParams(sp.toString());
     if (!value) next.delete(key);
     else next.set(key, value);
+    if (key !== "page") next.set("page", "1");
     router.push(`/shop?${next.toString()}`);
   }
 
@@ -142,10 +145,7 @@ export function ShopClient() {
               Phone model
             </div>
             <div className="mt-3">
-              <Select
-                value={phoneModel}
-                onChange={(e) => setParam("phoneModel", e.target.value)}
-              >
+              <Select value={phoneModel} onChange={(e) => setParam("phoneModel", e.target.value)}>
                 {phoneModelOptions.map((m) => (
                   <option key={m} value={m} className="bg-ink">
                     {m ? m : "All"}
@@ -158,10 +158,7 @@ export function ShopClient() {
           <div>
             <div className="text-sm font-bold text-white">Colors</div>
             <div className="mt-3">
-              <Select
-                value={color}
-                onChange={(e) => setParam("color", e.target.value)}
-              >
+              <Select value={color} onChange={(e) => setParam("color", e.target.value)}>
                 {colorOptions.map((c) => (
                   <option key={c} value={c} className="bg-ink">
                     {c ? c : "All"}
@@ -174,10 +171,7 @@ export function ShopClient() {
           <div>
             <div className="text-sm font-bold text-white">Featured</div>
             <div className="mt-3">
-              <Select
-                value={featured}
-                onChange={(e) => setParam("featured", e.target.value)}
-              >
+              <Select value={featured} onChange={(e) => setParam("featured", e.target.value)}>
                 <option value="" className="bg-ink">
                   All
                 </option>
@@ -197,10 +191,7 @@ export function ShopClient() {
               Sorting
             </div>
             <div className="mt-3">
-              <Select
-                value={sort}
-                onChange={(e) => setParam("sort", e.target.value)}
-              >
+              <Select value={sort} onChange={(e) => setParam("sort", e.target.value)}>
                 <option value="newest" className="bg-ink">
                   Newest
                 </option>
@@ -238,6 +229,28 @@ export function ShopClient() {
           {products.map((p) => (
             <ProductCard key={p._id} product={p} />
           ))}
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-3 text-sm text-white/70">
+          <div>
+            Page {pageMeta.page} of {pageMeta.totalPages} ({pageMeta.total} items)
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              disabled={pageMeta.page <= 1 || loading}
+              onClick={() => setParam("page", String(Math.max(1, page - 1)))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="ghost"
+              disabled={pageMeta.page >= pageMeta.totalPages || loading}
+              onClick={() => setParam("page", String(page + 1))}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>

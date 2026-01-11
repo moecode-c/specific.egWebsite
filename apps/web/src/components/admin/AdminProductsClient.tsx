@@ -14,13 +14,16 @@ export function AdminProductsClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pageMeta, setPageMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+  const pageSize = 50;
 
-  async function refresh() {
+  async function refresh(nextPage = pageMeta.page) {
     setLoading(true);
     setError(null);
     try {
-      const { products } = await api.products({ sort: "newest" });
-      setProducts(products);
+      const res = await api.products({ sort: "newest", page: nextPage, limit: pageSize });
+      setProducts(res.products);
+      setPageMeta({ page: res.page, totalPages: res.totalPages, total: res.total });
     } catch (e: any) {
       setError(e.message || "Failed");
     } finally {
@@ -29,7 +32,7 @@ export function AdminProductsClient() {
   }
 
   useEffect(() => {
-    refresh();
+    refresh(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -42,7 +45,7 @@ export function AdminProductsClient() {
             Add product
           </Button>
         </Link>
-        <Button variant="ghost" onClick={refresh}>
+        <Button variant="ghost" onClick={() => refresh(pageMeta.page)}>
           <IconRefresh className="text-white/70" />
           Refresh
         </Button>
@@ -113,6 +116,28 @@ export function AdminProductsClient() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-3 text-sm text-white/70">
+        <div>
+          Page {pageMeta.page} of {pageMeta.totalPages} ({pageMeta.total} items)
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            disabled={pageMeta.page <= 1 || loading}
+            onClick={() => refresh(Math.max(1, pageMeta.page - 1))}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="ghost"
+            disabled={pageMeta.page >= pageMeta.totalPages || loading}
+            onClick={() => refresh(pageMeta.page + 1)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

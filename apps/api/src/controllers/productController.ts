@@ -11,6 +11,8 @@ export async function listProducts(req: Request, res: Response) {
     color,
     featured,
     sort,
+    page,
+    limit,
   } = req.query as Record<string, string | undefined>;
 
   const filter: Record<string, unknown> = {};
@@ -35,8 +37,27 @@ export async function listProducts(req: Request, res: Response) {
   else if (sort === "price_desc") sortObj.price = -1;
   else sortObj.createdAt = -1;
 
-  const products = await Product.find(filter).sort(sortObj).lean();
-  res.json({ products });
+  const pageNum = Math.max(Number(page) || 1, 1);
+  const pageSize = Math.min(Math.max(Number(limit) || 24, 1), 100);
+  const skip = (pageNum - 1) * pageSize;
+
+  const [products, total] = await Promise.all([
+    Product.find(filter)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(pageSize)
+      .select("name description price images phoneModels colors isFeatured createdAt")
+      .lean(),
+    Product.countDocuments(filter),
+  ]);
+
+  res.json({
+    products,
+    total,
+    page: pageNum,
+    pageSize,
+    totalPages: Math.max(1, Math.ceil(total / pageSize)),
+  });
 }
 
 export async function getProduct(req: Request, res: Response) {
