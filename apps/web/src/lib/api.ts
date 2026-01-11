@@ -216,6 +216,10 @@ export const api = {
     return apiFetch<{ reviews: Review[] }>(`/api/reviews${qs ? `?${qs}` : ""}`);
   },
 
+  async storageHealth() {
+    return apiFetch<{ ok: boolean; bucket: string; sample?: string | null; error?: string; statusCode?: number }>("/api/storage/health");
+  },
+
   async adminCreateReview(token: string, payload: { name: string; rating: number; title: string; body: string; isFeatured: boolean }) {
     return apiFetch<{ review: Review }>("/api/reviews", {
       method: "POST",

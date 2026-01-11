@@ -73,3 +73,25 @@ export async function uploadImagesToSupabase(
 
   return Promise.all(files.map((file) => uploadSingle(file)));
 }
+
+export async function storageHealthCheck() {
+  assertStorageConfigured();
+  const bucket = env.SUPABASE_BUCKET;
+
+  const { data, error } = await supabase.storage.from(bucket).list("", { limit: 1 });
+
+  if (error) {
+    return {
+      ok: false,
+      bucket,
+      error: error.message,
+      statusCode: error.statusCode,
+    };
+  }
+
+  return {
+    ok: true,
+    bucket,
+    sample: data?.[0]?.name ?? null,
+  };
+}

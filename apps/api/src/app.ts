@@ -15,6 +15,7 @@ import { reviewRoutes } from "./routes/reviewRoutes";
 import { assertEnv, env } from "./utils/env";
 import { connectDb } from "./utils/db";
 import { ensureUploadsDir, getUploadsDir } from "./utils/uploads";
+import { storageHealthCheck } from "./utils/storage";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 
 let dbInitPromise: Promise<void> | null = null;
@@ -114,6 +115,14 @@ export function createApp() {
   );
 
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
+  app.get("/api/storage/health", async (_req, res, next) => {
+    try {
+      const info = await storageHealthCheck();
+      res.json(info);
+    } catch (err) {
+      next(err);
+    }
+  });
   app.use("/api/auth", authLimiter, authRoutes);
   app.use("/api/products", productRoutes);
   app.use("/api/orders", orderRoutes);
