@@ -42,20 +42,34 @@ export async function uploadImagesToSupabase(
 
   assertStorageConfigured();
 
-  const uploads = files.map(async (file) => {
+  async function uploadSingle(file: Express.Multer.File) {
     const objectPath = buildObjectPath(file, folder);
-    const { error } = await supabase.storage.from(env.SUPABASE_BUCKET).upload(objectPath, file.buffer, {
-      cacheControl: "31536000",
-      contentType: file.mimetype || undefined,
-      upsert: false,
-    });
 
-    if (error) {
-      throw new Error(`Failed to upload ${file.originalname}: ${error.message}`);
+    // Retry transient network errors (e.g., Supabase fetch failed) a few times before bailing.
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      const { error } = await supabase.storage
+        .from(env.SUPABASE_BUCKET)
+        .upload(objectPath, file.buffer, {
+          cacheControl: "31536000",
+          contentType: file.mimetype || undefined,
+          upsert: false,
+        });
+
+      if (!error) return buildPublicUrl(objectPath);
+
+      const isLast = attempt === maxAttempts;
+      const message = `Failed to upload ${file.originalname}: ${error.message}`;
+      if (isLast) {
+        throw new Error(message);
+      }
+
+      // Simple backoff to soften transient DNS/TLS hiccups in serverless environments.
+      await new Promise((resolve) => setTimeout(resolve, 250 * attempt));
     }
 
-    return buildPublicUrl(objectPath);
-  });
+    throw new Error(`Failed to upload ${file.originalname}: unknown error`);
+  }
 
-  return Promise.all(uploads);
+  return Promise.all(files.map((file) => uploadSingle(file)));
 }
