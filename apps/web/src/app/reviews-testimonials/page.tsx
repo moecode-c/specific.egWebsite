@@ -2,6 +2,9 @@ import { Container } from "../../components/Container";
 import { api } from "../../lib/api";
 import type { Review } from "../../lib/types";
 
+// Dynamic rendering is required because we use no-store fetches for live reviews data.
+export const dynamic = "force-dynamic";
+
 export default async function ReviewsTestimonialsPage() {
   let reviews: Review[] = [];
   try {
