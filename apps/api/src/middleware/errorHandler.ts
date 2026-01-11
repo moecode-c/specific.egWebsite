@@ -21,5 +21,10 @@ export function errorHandler(
 ) {
   const status = err instanceof HttpError ? err.status : 500;
   const message = err instanceof Error ? err.message : "Server error";
+
+  // Surface detailed errors in logs to help diagnose 500s (e.g., storage upload failures).
+  // eslint-disable-next-line no-console
+  console.error("API error", { status, message, err });
+
   res.status(status).json({ message });
 }
