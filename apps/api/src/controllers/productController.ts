@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { HttpError } from "../middleware/errorHandler";
 import { Product } from "../models/Product";
+import { uploadImagesToSupabase } from "../utils/storage";
 
 export async function listProducts(req: Request, res: Response) {
   const {
@@ -74,8 +75,9 @@ export async function createProduct(req: Request, res: Response) {
     throw new HttpError(400, "Missing fields");
   }
 
-  const images = (req.files as Express.Multer.File[] | undefined)?.map(
-    (f) => `/uploads/${f.filename}`
+  const images = await uploadImagesToSupabase(
+    req.files as Express.Multer.File[] | undefined,
+    "products"
   );
 
   const doc = await Product.create({
@@ -106,8 +108,9 @@ export async function updateProduct(req: Request, res: Response) {
   if (isFeatured !== undefined)
     existing.isFeatured = isFeatured === "true" || isFeatured === true;
 
-  const newImages = (req.files as Express.Multer.File[] | undefined)?.map(
-    (f) => `/uploads/${f.filename}`
+  const newImages = await uploadImagesToSupabase(
+    req.files as Express.Multer.File[] | undefined,
+    "products"
   );
   if (newImages?.length) existing.images = [...existing.images, ...newImages];
 
